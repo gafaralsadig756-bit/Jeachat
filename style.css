@@ -1,140 +1,127 @@
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-    background-color: #0e1621;
-    color: #ffffff;
+    background-color: #f0f2f5;
     height: 100vh;
     display: flex;
-    overflow: hidden;
-}
-
-.screen {
-    width: 100%;
-    height: 100vh;
-    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .hidden {
     display: none !important;
 }
 
-/* شاشة تسجيل الدخول */
-#login-screen {
-    justify-content: center;
-    align-items: center;
-    background: #17212b;
+/* شاشة التسجيل والأنماط العامة */
+.screen {
+    width: 100%;
+    height: 100vh;
+    display: flex;
 }
 
 .login-card {
-    background: #242f3d;
+    background: #fff;
     padding: 30px;
-    border-radius: 12px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     text-align: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    margin: auto;
 }
 
-.login-card h2 { margin-bottom: 10px; }
-.login-card p { color: #7f91a4; margin-bottom: 20px; }
-
-#google-login-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    width: 100%;
-    padding: 12px;
-    background: #5288c1;
+.btn {
+    background-color: #075e54;
     color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 16px;
+    padding: 10px 20px;
+    border-radius: 5px;
     cursor: pointer;
+    font-size: 15px;
+    margin-top: 15px;
 }
 
-#google-login-btn img { width: 20px; height: 20px; }
-
-/* النافذة المنبثقة */
 .modal {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: flex; justify-content: center; align-items: center;
     z-index: 100;
 }
 
 .modal-content {
-    background: #242f3d;
+    background: #fff;
     padding: 25px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 350px;
+    border-radius: 8px;
+    text-align: center;
 }
-
-.hint-text { font-size: 12px; color: #7f91a4; margin-top: 5px; }
 
 .modal-content input {
     width: 100%;
-    padding: 10px;
+    padding: 8px;
     margin: 15px 0;
-    border-radius: 6px;
-    border: 1px solid #101419;
-    background: #17212b;
-    color: white;
 }
 
-.modal-content button {
-    width: 100%;
-    padding: 10px;
-    background: #5288c1;
-    border: none;
-    color: white;
-    border-radius: 6px;
+/* تقسيم واجهة التطبيق (مثل الواتساب) */
+#app-screen {
+    max-width: 1200px;
+    height: 90vh;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin: auto;
 }
 
-/* القائمة الجانبية (Sidebar) */
 .sidebar {
-    width: 320px;
-    background: #17212b;
-    border-left: 1px solid #0e1621;
+    width: 35%;
+    border-left: 1px solid #ddd;
     display: flex;
     flex-direction: column;
+    background: #fff;
 }
 
 .sidebar-header {
-    padding: 15px;
+    background: #075e54;
+    color: #fff;
+    padding: 10px 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #0e1621;
 }
 
-.user-profile { display: flex; align-items: center; gap: 10px; font-weight: bold; }
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #128c7e;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
 
 .search-box {
     padding: 10px;
-    display: flex;
-    align-items: center;
-    background: #0e1621;
-    margin: 10px;
-    border-radius: 20px;
-    gap: 8px;
+    background: #f6f6f6;
 }
 
-.search-box span { color: #7f91a4; }
-
 .search-box input {
-    background: transparent;
-    border: none;
-    color: white;
-    outline: none;
     width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    outline: none;
 }
 
 .chats-list {
@@ -142,144 +129,60 @@ body {
     overflow-y: auto;
 }
 
-.empty-list-notice {
-    padding: 20px;
-    font-size: 13px;
-    color: #7f91a4;
-    text-align: center;
-}
-
-.user-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 15px;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.user-item:hover, .user-item.active {
-    background: #2b5278;
-}
-
-.user-item-info h4 { font-size: 14px; margin-bottom: 3px; }
-.user-item-info span { font-size: 11px; color: #7f91a4; }
-
-/* الشاشة الرئيسية للمحادثة */
-.chat-main {
+/* منطقة المحادثات */
+.chat-area {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: #0e1621;
+    background: #e5ddd5;
 }
 
-.no-chat-view {
+.chat-header {
+    background: #eddcd2;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid #ccc;
+}
+
+.chat-box {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.no-chat {
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    color: #7f91a4;
-}
-
-.big-icon { font-size: 64px !important; margin-bottom: 10px; opacity: 0.5; }
-
-.chat-header {
-    background: #242f3d;
-    padding: 12px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.user-info { display: flex; align-items: center; gap: 12px; }
-.avatar {
-    width: 40px; height: 40px;
-    background: #5288c1;
-    border-radius: 50%;
-    display: flex; justify-content: center; align-items: center;
-    font-weight: bold;
-}
-
-.status { font-size: 12px; color: #7f91a4; }
-.icon-btn { background: none; border: none; color: #7f91a4; cursor: pointer; }
-
-/* صندوق الرسائل والأنميشن */
-.chat-box {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.message {
-    max-width: 70%;
-    padding: 10px 14px;
-    border-radius: 12px;
-    position: relative;
-    word-wrap: break-word;
-    animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-@keyframes popIn {
-    0% { transform: scale(0.8) translateY(10px); opacity: 0; }
-    100% { transform: scale(1) translateY(0); opacity: 1; }
-}
-
-.message.outgoing {
-    align-self: flex-end;
-    background: #2b5278;
-    border-bottom-left-radius: 2px;
-}
-
-.message.incoming {
-    align-self: flex-start;
-    background: #182533;
-    border-bottom-right-radius: 2px;
-}
-
-.message-time {
-    font-size: 10px;
-    color: #7f91a4;
-    float: left;
-    margin-top: 5px;
-    margin-right: 8px;
+    color: #777;
 }
 
 .chat-input-area {
-    background: #17212b;
-    padding: 12px;
+    padding: 10px;
+    background: #f0f0f0;
     display: flex;
     gap: 10px;
-    align-items: center;
 }
 
 .chat-input-area input {
     flex: 1;
-    padding: 12px;
-    background: #0e1621;
-    border: none;
+    padding: 10px;
+    border: 1px solid #ccc;
     border-radius: 20px;
-    color: white;
     outline: none;
 }
 
-.send-btn {
-    background: #5288c1;
+.btn-send {
+    background: #075e54;
+    color: #fff;
     border: none;
-    width: 42px; height: 42px;
-    border-radius: 50%;
-    color: white;
-    display: flex; justify-content: center; align-items: center;
+    padding: 0 20px;
+    border-radius: 20px;
     cursor: pointer;
-}
-
-/* التجاوب مع شاشات الهواتف المحمولة */
-@media (max-width: 768px) {
-    .sidebar { width: 100%; }
-    .chat-main { display: none; }
-    .app-screen.chat-active .sidebar { display: none; }
-    .app-screen.chat-active .chat-main { display: flex; width: 100%; }
 }

@@ -3,120 +3,427 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>ELD JEACHAT</title>
+
     <link rel="stylesheet" href="style.css">
-    
-    <!-- مكتبات Firebase Compat -->
+
+    <!-- Firebase Compat -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
+
 <body>
 
-    <!-- شاشة تسجيل الدخول -->
-    <div id="login-screen" class="screen fade-in">
-        <div class="login-card">
-            <h2>إبدأ الدردشة الآن</h2>
-            <p style="margin-bottom: 25px;">مرحباً بك في عالم المحادثات الخاصة والمشفرة</p>
-            
-            <button id="google-login-btn" class="btn" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo" style="width: 20px; height: 20px;">
-                متابعة باستخدام Google
-            </button>
-        </div>
-    </div>
+    <!-- ==================== LOGIN ==================== -->
 
-    <!-- نافذة إدخال اسم المستخدم -->
+    <section id="login-screen" class="screen login-screen">
+        <div class="login-card fade-in">
+
+            <div class="login-logo">💬</div>
+
+            <h1>ELD JEACHAT</h1>
+
+            <p>
+                ابدأ الدردشة الآن واستمتع بمحادثاتك الخاصة.
+            </p>
+
+            <button id="google-login-btn" class="btn google-btn">
+                <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+                    alt="Google"
+                >
+                <span>متابعة باستخدام Google</span>
+            </button>
+
+            <p id="login-error" class="error-message hidden"></p>
+
+        </div>
+    </section>
+
+
+    <!-- ==================== USERNAME MODAL ==================== -->
+
     <div id="username-modal" class="modal hidden">
         <div class="modal-content fade-in">
-            <h3>الرجاء إدخال اسم المستخدم</h3>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;">يجب ألا يتكرر مع اسم مستخدم آخر.</p>
-            <input type="text" id="username-input" placeholder="اسم المستخدم (بالإنجليزي)...">
-            <button id="save-username-btn" class="btn" style="width: 100%;">حفظ ومتابعة</button>
-            <p id="loading-msg" class="hidden" style="margin-top: 15px; color: var(--primary-color); font-weight: bold;">جاري التحميل... ⏳</p>
-            <p id="success-msg" class="hidden" style="margin-top: 15px; color: #25d366; font-weight: bold;">تهانينا تم إنشاء حساب بنجاح 🎉</p>
+
+            <div class="modal-icon">👤</div>
+
+            <h2>اختر اسم المستخدم</h2>
+
+            <p class="modal-description">
+                اسم المستخدم يجب أن يكون فريداً ولا يقل عن 3 أحرف.
+            </p>
+
+            <input
+                type="text"
+                id="username-input"
+                class="text-input"
+                placeholder="مثال: jea_user"
+                maxlength="30"
+                autocomplete="off"
+            >
+
+            <p id="username-error" class="error-message hidden"></p>
+
+            <button id="save-username-btn" class="btn primary-btn">
+                حفظ ومتابعة
+            </button>
+
+            <p id="loading-msg" class="loading-message hidden">
+                جاري إنشاء الحساب... ⏳
+            </p>
+
+            <p id="success-msg" class="success-message hidden">
+                تم إنشاء الحساب بنجاح 🎉
+            </p>
+
         </div>
     </div>
 
-    <!-- نافذة الإعدادات -->
+
+    <!-- ==================== SETTINGS ==================== -->
+
     <div id="settings-modal" class="modal hidden">
-        <div class="modal-content fade-in" style="text-align: right;">
-            <h3 style="text-align: center; margin-bottom: 20px;">الإعدادات ⚙️</h3>
-            
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">
-                <span>المظهر الداكن (Dark Mode)</span>
-                <button id="theme-toggle-btn" class="btn" style="margin: 0; padding: 6px 15px; background: var(--text-muted);">تفعيل</button>
+        <div class="modal-content settings-content fade-in">
+
+            <div class="modal-header">
+                <h2>الإعدادات</h2>
+
+                <button
+                    id="close-settings-btn"
+                    class="icon-btn close-btn"
+                    aria-label="إغلاق"
+                >
+                    ✕
+                </button>
             </div>
-            
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">
-                <span>إخفاء "متصل الآن"</span>
-                <input type="checkbox" id="hide-status-checkbox" style="width: 20px; height: 20px;">
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+                    <strong>الوضع الداكن</strong>
+                    <span>تغيير مظهر التطبيق</span>
+                </div>
+
+                <button
+                    id="theme-toggle-btn"
+                    class="theme-toggle"
+                    type="button"
+                >
+                    <span id="theme-toggle-text">تفعيل</span>
+                </button>
+
             </div>
-            
-            <button id="logout-btn" class="btn" style="background-color: #dc3545; width: 100%;">🚪 تسجيل الخروج</button>
-            <button id="close-settings-btn" class="btn" style="background-color: var(--text-muted); width: 100%; margin-top: 10px;">إغلاق</button>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+                    <strong>إخفاء حالة الاتصال</strong>
+                    <span>إخفاء ظهورك كمتصل الآن</span>
+                </div>
+
+                <label class="switch">
+                    <input
+                        type="checkbox"
+                        id="hide-status-checkbox"
+                    >
+                    <span class="slider"></span>
+                </label>
+
+            </div>
+
+
+            <button
+                id="logout-btn"
+                class="btn danger-btn"
+                type="button"
+            >
+                🚪 تسجيل الخروج
+            </button>
+
         </div>
     </div>
 
-    <!-- شاشة التطبيق الرئيسية -->
-    <div id="app-screen" class="screen hidden">
-        <!-- الشريط الجانبي للمحادثات -->
-        <div class="sidebar">
-            <div class="sidebar-header">
+
+    <!-- ==================== APP ==================== -->
+
+    <main id="app-screen" class="app-screen hidden">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <header class="sidebar-header">
+
                 <div class="user-profile">
-                    <div id="my-avatar" class="avatar">G</div>
-                    <span id="my-username">المستخدم</span>
+
+                    <div id="my-avatar" class="avatar">
+                        U
+                    </div>
+
+                    <div class="user-profile-info">
+                        <strong id="my-username">
+                            المستخدم
+                        </strong>
+
+                        <span>
+                            ELD JEACHAT
+                        </span>
+                    </div>
+
                 </div>
+
+
                 <div class="header-actions">
-                    <button id="add-chat-btn" title="محادثة جديدة">➕</button>
-                    <button id="settings-btn" title="الإعدادات">⚙️</button>
+
+                    <button
+                        id="add-chat-btn"
+                        class="icon-btn"
+                        type="button"
+                        aria-label="محادثة جديدة"
+                        title="محادثة جديدة"
+                    >
+                        ➕
+                    </button>
+
+                    <button
+                        id="settings-btn"
+                        class="icon-btn"
+                        type="button"
+                        aria-label="الإعدادات"
+                        title="الإعدادات"
+                    >
+                        ⚙️
+                    </button>
+
                 </div>
+
+            </header>
+
+
+            <!-- SEARCH -->
+
+            <div
+                id="search-container"
+                class="search-container hidden"
+            >
+
+                <div class="search-wrapper">
+
+                    <span class="search-icon">
+                        🔎
+                    </span>
+
+                    <input
+                        type="text"
+                        id="user-search-input"
+                        placeholder="ابحث عن اسم مستخدم..."
+                        autocomplete="off"
+                    >
+
+                    <button
+                        id="close-search-btn"
+                        class="search-close"
+                        type="button"
+                        aria-label="إغلاق البحث"
+                    >
+                        ✕
+                    </button>
+
+                </div>
+
             </div>
 
-            <!-- مربع البحث عن اسم المستخدم -->
-            <div class="search-box hidden" id="search-container">
-                <input type="text" id="user-search-input" placeholder="ابحث عن اسم مستخدم لبدء محادثة...">
+
+            <!-- CHAT LIST -->
+
+            <div
+                id="chats-list"
+                class="chats-list"
+            >
+
+                <div class="empty-list-notice">
+                    <div class="empty-icon">💬</div>
+
+                    <strong>لا توجد محادثات</strong>
+
+                    <span>
+                        اضغط على ➕ لبدء محادثة جديدة
+                    </span>
+                </div>
+
             </div>
 
-            <!-- قائمة المستخدمين والدردشات -->
-            <div id="chats-list" class="chats-list">
-                <div class="empty-list-notice fade-in">لا يوجد محادثات حتى الآن.<br>اضغط على ➕ للبدء!</div>
-            </div>
-        </div>
+        </aside>
 
-        <!-- منطقة الدردشة النشطة -->
-        <div class="chat-area">
-            <!-- الهيدر الخاص بالدردشة -->
-            <div id="chat-header" class="chat-header hidden">
-                <div id="active-chat-avatar" class="avatar">U</div>
+
+        <!-- CHAT AREA -->
+
+        <section class="chat-area">
+
+            <!-- CHAT HEADER -->
+
+            <header
+                id="chat-header"
+                class="chat-header hidden"
+            >
+
+                <div
+                    id="active-chat-avatar"
+                    class="avatar"
+                >
+                    U
+                </div>
+
                 <div class="chat-header-info">
-                    <h3 id="active-chat-username">اسم المستخدم</h3>
-                    <span id="active-user-status" style="font-size: 12px; color: var(--text-muted);">متصل الآن</span>
+
+                    <strong id="active-chat-username">
+                        اسم المستخدم
+                    </strong>
+
+                    <span id="active-user-status">
+                        غير متصل
+                    </span>
+
                 </div>
-            </div>
 
-            <!-- الرسالة الترحيبية عند عدم اختيار محادثة -->
-            <div id="no-chat-selected" class="no-chat fade-in">
-                <div style="font-size: 50px; margin-bottom: 15px;">💬</div>
-                <h3>مرحباً بك في ELD JEACHAT</h3>
-                <p>اختر محادثة من القائمة أو ابدأ دردشة جديدة</p>
-            </div>
+            </header>
 
-            <!-- صندوق الرسائل -->
-            <div id="chat-box" class="chat-box hidden">
-                <div style="text-align: center; margin-bottom: 20px; font-size: 11px; color: var(--text-muted); background: var(--header-bg); padding: 8px 15px; border-radius: 20px; width: fit-content; margin-left: auto; margin-right: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                    🔒 الرسائل مشفرة ويتم حذفها تلقائياً كل 12 ساعة للتنظيف
+
+            <!-- NO CHAT -->
+
+            <div
+                id="no-chat-selected"
+                class="no-chat"
+            >
+
+                <div class="no-chat-icon">
+                    💬
                 </div>
+
+                <h2>
+                    مرحباً بك في ELD JEACHAT
+                </h2>
+
+                <p>
+                    اختر محادثة من القائمة أو ابدأ محادثة جديدة.
+                </p>
+
             </div>
 
-            <!-- منطقة إدخال الرسالة -->
-            <div id="chat-input-area" class="chat-input-area hidden">
-                <input type="text" id="message-input" placeholder="اكتب رسالتك هنا...">
-                <button id="send-btn" class="btn-send">➤</button>
+
+            <!-- MESSAGES -->
+
+            <div
+                id="chat-box"
+                class="chat-box hidden"
+            >
+
+                <div class="chat-notice">
+                    🔒 يتم الاحتفاظ بالرسائل لمدة 12 ساعة.
+                </div>
+
             </div>
-        </div>
+
+
+            <!-- REPLY PREVIEW -->
+
+            <div
+                id="reply-preview"
+                class="reply-preview hidden"
+            >
+
+                <div>
+                    <strong id="reply-preview-user"></strong>
+
+                    <span id="reply-preview-text"></span>
+                </div>
+
+                <button
+                    id="cancel-reply-btn"
+                    type="button"
+                >
+                    ✕
+                </button>
+
+            </div>
+
+
+            <!-- MESSAGE INPUT -->
+
+            <div
+                id="chat-input-area"
+                class="chat-input-area hidden"
+            >
+
+                <input
+                    type="text"
+                    id="message-input"
+                    placeholder="اكتب رسالتك هنا..."
+                    autocomplete="off"
+                    maxlength="5000"
+                >
+
+                <button
+                    id="send-btn"
+                    class="btn-send"
+                    type="button"
+                    aria-label="إرسال"
+                >
+                    ➤
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ==================== CONTEXT MENU ==================== -->
+
+    <div
+        id="message-context-menu"
+        class="context-menu hidden"
+    >
+
+        <button
+            type="button"
+            data-action="reply"
+        >
+            ↪️ الرد
+        </button>
+
+        <button
+            type="button"
+            data-action="delete-me"
+        >
+            🗑️ حذف لدي
+        </button>
+
+        <button
+            type="button"
+            data-action="edit"
+        >
+            ✏️ تعديل
+        </button>
+
+        <button
+            type="button"
+            data-action="delete-all"
+            class="danger-option"
+        >
+            🚫 حذف لدى الجميع
+        </button>
+
     </div>
+
 
     <script src="app.js"></script>
+
 </body>
 </html>

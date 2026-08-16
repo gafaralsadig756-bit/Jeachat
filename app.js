@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-// 1. ضع إعدادات مشروعك من Firebase Console هنا
+// 1. إعدادات مشروع Firebase الخاصة بك
 const firebaseConfig = {
   apiKey: "AIzaSyAoUNChdv9mM3ijVjEkDZCzarVKIVcSGtM",
   authDomain: "eld-jeachat.firebaseapp.com",
@@ -9,7 +9,6 @@ const firebaseConfig = {
   messagingSenderId: "566166664040",
   appId: "1:566166664040:web:c0aa091b1a02f79e721cdd"
 };
-
 
 // تهيئة Firebase
 if (!firebase.apps.length) {
@@ -54,46 +53,50 @@ const translations = {
     en: { placeholder: "Write a message...", search: "Search username..." }
 };
 
-// تسجيل الدخول بحساب Google متوافق مع GitHub Pages
-googleLoginBtn.addEventListener('click', () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
-        .then((result) => {
-            console.log("تم تسجيل الدخول بنجاح:", result.user.displayName);
-        })
-        .catch((error) => {
-            console.error("خطأ التسجيل:", error);
-            alert("حدث خطأ أثناء تسجيل الدخول: " + error.message);
-        });
-});
+// تسجيل الدخول بحساب Google
+if (googleLoginBtn) {
+    googleLoginBtn.addEventListener('click', () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider)
+            .then((result) => {
+                console.log("تم تسجيل الدخول بنجاح:", result.user.displayName);
+            })
+            .catch((error) => {
+                console.error("خطأ التسجيل:", error);
+                alert("حدث خطأ أثناء تسجيل الدخول: " + error.message);
+            });
+    });
+}
 
 // مراقبة حالة المستخدِم
 auth.onAuthStateChanged((user) => {
     if (user) {
         currentUser = user;
         if (!customUsername) {
-            usernameModal.classList.remove('hidden');
+            if (usernameModal) usernameModal.classList.remove('hidden');
         } else {
             saveUserData();
             setupApp();
         }
     } else {
-        loginScreen.classList.remove('hidden');
-        appScreen.classList.add('hidden');
+        if (loginScreen) loginScreen.classList.remove('hidden');
+        if (appScreen) appScreen.classList.add('hidden');
     }
 });
 
 // حفظ اسم المستخدم والبيانات في Firestore
-saveUsernameBtn.addEventListener('click', () => {
-    const val = usernameInput.value.trim().toLowerCase();
-    if (val) {
-        customUsername = val;
-        localStorage.setItem('chat_username', val);
-        usernameModal.classList.add('hidden');
-        saveUserData();
-        setupApp();
-    }
-});
+if (saveUsernameBtn) {
+    saveUsernameBtn.addEventListener('click', () => {
+        const val = usernameInput.value.trim().toLowerCase();
+        if (val) {
+            customUsername = val;
+            localStorage.setItem('chat_username', val);
+            if (usernameModal) usernameModal.classList.add('hidden');
+            saveUserData();
+            setupApp();
+        }
+    });
+}
 
 function saveUserData() {
     if (!currentUser) return;
@@ -105,43 +108,47 @@ function saveUserData() {
 }
 
 function setupApp() {
-    loginScreen.classList.add('hidden');
-    appScreen.classList.remove('hidden');
-    myUsername.innerText = customUsername;
-    myAvatar.innerText = customUsername.charAt(0).toUpperCase();
+    if (loginScreen) loginScreen.classList.add('hidden');
+    if (appScreen) appScreen.classList.remove('hidden');
+    if (myUsername) myUsername.innerText = customUsername;
+    if (myAvatar) myAvatar.innerText = customUsername.charAt(0).toUpperCase();
 }
 
 // البحث عن مستخدم باسمه
-userSearchInput.addEventListener('input', (e) => {
-    const query = e.target.value.trim().toLowerCase();
-    if (query.length < 2) {
-        chatsList.innerHTML = '<div class="empty-list-notice">ابحث عن اسم مستخدم لبدء محادثة خاصة</div>';
-        return;
-    }
+if (userSearchInput) {
+    userSearchInput.addEventListener('input', (e) => {
+        const query = e.target.value.trim().toLowerCase();
+        if (query.length < 2) {
+            chatsList.innerHTML = '<div class="empty-list-notice">ابحث عن اسم مستخدم لبدء محادثة خاصة</div>';
+            return;
+        }
 
-    db.collection('users')
-        .where('username', '>=', query)
-        .where('username', '<=', query + '\uf8ff')
-        .get()
-        .then((snapshot) => {
-            chatsList.innerHTML = '';
-            let count = 0;
-            snapshot.forEach((doc) => {
-                const u = doc.data();
-                if (u.uid !== currentUser.uid) {
-                    count++;
-                    renderUserItem(u);
+        db.collection('users')
+            .where('username', '>=', query)
+            .where('username', '<=', query + '\uf8ff')
+            .get()
+            .then((snapshot) => {
+                chatsList.innerHTML = '';
+                let count = 0;
+                snapshot.forEach((doc) => {
+                    const u = doc.data();
+                    if (u.uid !== currentUser.uid) {
+                        count++;
+                        renderUserItem(u);
+                    }
+                });
+                if (count === 0) {
+                    chatsList.innerHTML = '<div class="empty-list-notice">لم يتم العثور على مستخدم بهذه الكلمة</div>';
                 }
-            });
-            if (count === 0) {
-                chatsList.innerHTML = '<div class="empty-list-notice">لم يتم العثور على مستخدم بهذه الكلمة</div>';
-            }
-        });
-});
+            })
+            .catch((err) => console.error("خطأ البحث:", err));
+    });
+}
 
 function renderUserItem(user) {
     const item = document.createElement('div');
     item.classList.add('user-item');
+    item.style.cursor = 'pointer';
     item.innerHTML = `
         <div class="avatar">${user.username.charAt(0).toUpperCase()}</div>
         <div class="user-item-info">
@@ -160,14 +167,27 @@ function openPrivateChat(targetUser) {
     // معرف الغرفة الفريد
     currentChatId = [currentUser.uid, targetUser.uid].sort().join('_');
 
-    // تحديث الواجهة
-    noChatSelected.classList.add('hidden');
-    chatHeader.classList.remove('hidden');
-    chatBox.classList.remove('hidden');
-    chatInputArea.classList.remove('hidden');
+    // إظهار عناصر المحادثة وإخفاء شاشة "لا توجد محادثة"
+    if (noChatSelected) {
+        noChatSelected.classList.add('hidden');
+        noChatSelected.style.display = 'none';
+    }
+    
+    if (chatHeader) {
+        chatHeader.classList.remove('hidden');
+        chatHeader.style.display = 'flex';
+    }
+    if (chatBox) {
+        chatBox.classList.remove('hidden');
+        chatBox.style.display = 'block';
+    }
+    if (chatInputArea) {
+        chatInputArea.classList.remove('hidden');
+        chatInputArea.style.display = 'flex';
+    }
 
-    activeChatUsername.innerText = targetUser.username;
-    activeChatAvatar.innerText = targetUser.username.charAt(0).toUpperCase();
+    if (activeChatUsername) activeChatUsername.innerText = targetUser.username;
+    if (activeChatAvatar) activeChatAvatar.innerText = targetUser.username.charAt(0).toUpperCase();
 
     // إلغاء الاشتراك في الاستماع للمحادثة السابقة إن وجد
     if (unsubscribeMessages) unsubscribeMessages();
@@ -177,10 +197,12 @@ function openPrivateChat(targetUser) {
 }
 
 // إرسال رسالة خاصة
-sendBtn.addEventListener('click', sendMessage);
-messageInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') sendMessage();
-});
+if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+if (messageInput) {
+    messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+}
 
 function sendMessage() {
     const text = messageInput.value.trim();
@@ -190,9 +212,9 @@ function sendMessage() {
         text: text,
         senderUid: currentUser.uid,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    messageInput.value = '';
+    }).then(() => {
+        messageInput.value = '';
+    }).catch((err) => console.error("خطأ إرسال الرسالة:", err));
 }
 
 // جلب رسائل المحادثة الخاصة بالوقت الحقيقي
@@ -200,16 +222,19 @@ function loadPrivateMessages() {
     unsubscribeMessages = db.collection('chats').doc(currentChatId).collection('messages')
         .orderBy('timestamp', 'asc')
         .onSnapshot((snapshot) => {
-            chatBox.innerHTML = '';
+            if (chatBox) chatBox.innerHTML = '';
             snapshot.forEach((doc) => {
                 const data = doc.data();
                 displayMessage(data);
             });
-            chatBox.scrollTop = chatBox.scrollHeight;
+            if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+        }, (error) => {
+            console.error("خطأ جلب الرسائل:", error);
         });
 }
 
 function displayMessage(data) {
+    if (!chatBox) return;
     const msgDiv = document.createElement('div');
     const isMe = data.senderUid === currentUser.uid;
     
@@ -226,16 +251,20 @@ function displayMessage(data) {
 }
 
 // تسجيل الخروج
-logoutBtn.addEventListener('click', () => {
-    auth.signOut();
-    localStorage.removeItem('chat_username');
-    location.reload();
-});
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+        auth.signOut();
+        localStorage.removeItem('chat_username');
+        location.reload();
+    });
+}
 
 // تبديل اللغة
-langBtn.addEventListener('click', () => {
-    currentLang = currentLang === 'ar' ? 'en' : 'ar';
-    document.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-    messageInput.placeholder = translations[currentLang].placeholder;
-    userSearchInput.placeholder = translations[currentLang].search;
-});
+if (langBtn) {
+    langBtn.addEventListener('click', () => {
+        currentLang = currentLang === 'ar' ? 'en' : 'ar';
+        document.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+        if (messageInput) messageInput.placeholder = translations[currentLang].placeholder;
+        if (userSearchInput) userSearchInput.placeholder = translations[currentLang].search;
+    });
+}

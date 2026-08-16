@@ -1,4 +1,3 @@
-/* المتغيرات العامة لدعم الثيمات (الوضع الفاتح والداكن) */
 :root {
     --bg-main: #e2e8f0;
     --bg-chat: #efeae2;
@@ -13,7 +12,6 @@
     --border-color: #d1d7db;
 }
 
-/* الوضع الداكن (Dark Mode) - يتم تفعيله عبر إضافة كلاس 'dark-theme' للـ body */
 body.dark-theme {
     --bg-main: #111b21;
     --bg-chat: #0b141a;
@@ -49,13 +47,8 @@ body {
     display: none !important;
 }
 
-/* الأنيميشن (حركات الدخول والخروج) */
 .fade-in {
     animation: fadeIn 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
-}
-
-.fade-out {
-    animation: fadeOut 0.4s ease-in forwards;
 }
 
 @keyframes fadeIn {
@@ -63,12 +56,6 @@ body {
     to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-@keyframes fadeOut {
-    from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(-10px); }
-}
-
-/* شاشة التسجيل والأنماط العامة */
 .screen {
     width: 100%;
     height: 100vh;
@@ -82,7 +69,6 @@ body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     text-align: center;
     margin: auto;
-    transition: transform 0.3s ease;
 }
 
 .login-card h2 {
@@ -111,10 +97,8 @@ body {
 .btn:hover {
     background-color: var(--primary-hover);
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 168, 132, 0.4);
 }
 
-/* النوافذ المنبثقة (Modal) */
 .modal {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -143,14 +127,8 @@ body {
     background: var(--bg-main);
     color: var(--text-main);
     outline: none;
-    transition: border 0.3s;
 }
 
-.modal-content input:focus {
-    border-color: var(--primary-color);
-}
-
-/* تقسيم واجهة التطبيق */
 #app-screen {
     width: 95%;
     max-width: 1400px;
@@ -166,7 +144,7 @@ body {
 .sidebar {
     width: 35%;
     min-width: 320px;
-    border-left: 1px solid var(--border-color); /* الاتجاه العربي RTL */
+    border-left: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     background: var(--bg-card);
@@ -197,7 +175,6 @@ body {
     justify-content: center;
     font-weight: bold;
     font-size: 18px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .header-actions button {
@@ -242,7 +219,6 @@ body {
     font-size: 14px;
 }
 
-/* منطقة المحادثات */
 .chat-area {
     flex: 1;
     display: flex;
@@ -269,7 +245,6 @@ body {
     gap: 10px;
 }
 
-/* تنسيق فقاعات الدردشة والرسائل (يمين ويسار) */
 .message {
     display: flex;
     flex-direction: column;
@@ -277,14 +252,12 @@ body {
     animation: fadeIn 0.3s ease-out;
 }
 
-/* رسائلك (اليمين) */
 .message.outgoing {
-    align-self: flex-start; /* في الـ RTL، flex-start تعني اليمين */
+    align-self: flex-start;
 }
 
-/* رسائل المستلم (اليسار) */
 .message.incoming {
-    align-self: flex-end; /* في الـ RTL، flex-end تعني اليسار */
+    align-self: flex-end;
 }
 
 .msg-bubble {
@@ -299,13 +272,13 @@ body {
 
 .message.outgoing .msg-bubble {
     background-color: var(--bubble-out);
-    border-top-right-radius: 3px; /* زاوية حادة في الأعلى لتبدو كرسالة مرسلة */
+    border-top-right-radius: 3px;
     color: var(--text-main);
 }
 
 .message.incoming .msg-bubble {
     background-color: var(--bubble-in);
-    border-top-left-radius: 3px; /* زاوية حادة في الأعلى لتبدو كرسالة مستلمة */
+    border-top-left-radius: 3px;
     color: var(--text-main);
 }
 

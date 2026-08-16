@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-// 1. ضع إعدادات مشروعك من Firebase هنا
+// 1. ضع إعدادات مشروعك من Firebase Console هنا
 const firebaseConfig = {
     apiKey: "YOUR_API_KEY",
     authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
@@ -11,11 +11,13 @@ const firebaseConfig = {
 };
 
 // تهيئة Firebase
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// العناصر الأساسية
+// العناصر الأساسية من الواجهة
 const loginScreen = document.getElementById('login-screen');
 const appScreen = document.getElementById('app-screen');
 const usernameModal = document.getElementById('username-modal');
@@ -51,12 +53,17 @@ const translations = {
     en: { placeholder: "Write a message...", search: "Search username..." }
 };
 
-// تسجيل الدخول بحساب Google
+// تسجيل الدخول بحساب Google متوافق مع GitHub Pages
 googleLoginBtn.addEventListener('click', () => {
     const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider).catch((error) => {
-        alert("حدث خطأ أثناء تسجيل الدخول: " + error.message);
-    });
+    auth.signInWithPopup(provider)
+        .then((result) => {
+            console.log("تم تسجيل الدخول بنجاح:", result.user.displayName);
+        })
+        .catch((error) => {
+            console.error("خطأ التسجيل:", error);
+            alert("حدث خطأ أثناء تسجيل الدخول: " + error.message);
+        });
 });
 
 // مراقبة حالة المستخدِم
@@ -88,6 +95,7 @@ saveUsernameBtn.addEventListener('click', () => {
 });
 
 function saveUserData() {
+    if (!currentUser) return;
     db.collection('users').doc(currentUser.uid).set({
         username: customUsername,
         email: currentUser.email,
@@ -148,7 +156,7 @@ function renderUserItem(user) {
 function openPrivateChat(targetUser) {
     activeChatUser = targetUser;
     
-    // معرف الغرفة الفريد المكون من معرّف الشخصين مرتبين
+    // معرف الغرفة الفريد
     currentChatId = [currentUser.uid, targetUser.uid].sort().join('_');
 
     // تحديث الواجهة
@@ -163,7 +171,7 @@ function openPrivateChat(targetUser) {
     // إلغاء الاشتراك في الاستماع للمحادثة السابقة إن وجد
     if (unsubscribeMessages) unsubscribeMessages();
 
-    // جلب الرسائل الخاصة بغرفة المحادثة الحالية
+    // جلب الرسائل الخاصة
     loadPrivateMessages();
 }
 

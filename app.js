@@ -1,6 +1,5 @@
 // @ts-nocheck
 
-// 1. إعدادات Firebase الخاصة بك
 const firebaseConfig = {
     apiKey: "AIzaSyAoUNChdv9mM3ijVjEkDZCzarVKIVcSGtM",
     authDomain: "eld-jeachat.firebaseapp.com",
@@ -10,17 +9,15 @@ const firebaseConfig = {
     appId: "1:566166664040:web:c0aa091b1a02f79e721cdd"
 };
 
-// تهيئة Firebase
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// تفعيل استمرارية الجلسة (لكي لا يخرج المستخدم عند تحديث الصفحة)
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
-// العناصر الأساسية من الواجهة
+// العناصر الأساسية
 const loginScreen = document.getElementById('login-screen');
 const appScreen = document.getElementById('app-screen');
 const usernameModal = document.getElementById('username-modal');
@@ -46,7 +43,6 @@ const chatInputArea = document.getElementById('chat-input-area');
 const messageInput = document.getElementById('message-input');
 const sendBtn = document.getElementById('send-btn');
 
-// أزرار التحكم الجديدة
 const addChatBtn = document.getElementById('add-chat-btn');
 const settingsBtn = document.getElementById('settings-btn');
 const closeSettingsBtn = document.getElementById('close-settings-btn');
@@ -54,7 +50,6 @@ const logoutBtn = document.getElementById('logout-btn');
 const themeToggleBtn = document.getElementById('theme-toggle-btn');
 const hideStatusCheckbox = document.getElementById('hide-status-checkbox');
 
-// المتغيرات العامة
 let currentUser = null;
 let customUsername = '';
 let activeChatUser = null; 
@@ -63,10 +58,7 @@ let unsubscribeMessages = null;
 let replyToMessageData = null;
 let editingMessageId = null;
 
-// ==========================================
-// 1. نظام تسجيل الدخول والمصادقة
-// ==========================================
-
+// 1. المصادقة
 googleLoginBtn.addEventListener('click', () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider).catch((error) => alert("خطأ التسجيل: " + error.message));
@@ -75,7 +67,6 @@ googleLoginBtn.addEventListener('click', () => {
 auth.onAuthStateChanged(async (user) => {
     if (user) {
         currentUser = user;
-        // جلب بيانات المستخدم من قاعدة البيانات بدلاً من LocalStorage
         const userDoc = await db.collection('users').doc(user.uid).get();
         
         if (userDoc.exists && userDoc.data().username) {
@@ -93,7 +84,6 @@ auth.onAuthStateChanged(async (user) => {
     }
 });
 
-// حفظ اسم المستخدم مع التأكد من عدم تكراره
 saveUsernameBtn.addEventListener('click', async () => {
     const val = usernameInput.value.trim().toLowerCase();
     const loadingMsg = document.getElementById('loading-msg');
@@ -107,7 +97,6 @@ saveUsernameBtn.addEventListener('click', async () => {
     loadingMsg.classList.remove('hidden');
     saveUsernameBtn.classList.add('hidden');
 
-    // التحقق من قاعدة البيانات
     const snap = await db.collection('users').where('username', '==', val).get();
     
     if (!snap.empty) {
@@ -117,7 +106,6 @@ saveUsernameBtn.addEventListener('click', async () => {
         return;
     }
 
-    // إذا كان متاحاً، قم بحفظه
     customUsername = val;
     await db.collection('users').doc(currentUser.uid).set({
         username: customUsername,
@@ -137,24 +125,18 @@ saveUsernameBtn.addEventListener('click', async () => {
     }, 1500);
 });
 
-// إعداد الواجهة بعد الدخول
 function setupApp() {
     loginScreen.classList.add('hidden');
     appScreen.classList.remove('hidden');
-    appScreen.classList.add('fade-in');
-    
     myUsername.innerText = customUsername;
     myAvatar.innerText = customUsername.charAt(0).toUpperCase();
-    
     updateUserPresence(true);
     loadThemePreference();
 }
 
-// نظام التواجد (متصل الآن)
 function updateUserPresence(isOnline) {
     if (!currentUser) return;
     const isHidden = hideStatusCheckbox.checked;
-    
     db.collection('users').doc(currentUser.uid).update({
         isOnline: isHidden ? false : isOnline,
         lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
@@ -163,35 +145,24 @@ function updateUserPresence(isOnline) {
 }
 window.addEventListener('beforeunload', () => updateUserPresence(false));
 
-// ==========================================
-// 2. واجهة المستخدم والإعدادات
-// ==========================================
-
-// إظهار/إخفاء شريط البحث
+// 2. الواجهة والإعدادات
 addChatBtn.addEventListener('click', () => {
     searchContainer.classList.toggle('hidden');
-    if (!searchContainer.classList.contains('hidden')) {
-        userSearchInput.focus();
-    }
+    if (!searchContainer.classList.contains('hidden')) userSearchInput.focus();
 });
 
-// فتح الإعدادات
-settingsBtn.addEventListener('click', () => {
-    settingsModal.classList.remove('hidden');
-});
+settingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
 closeSettingsBtn.addEventListener('click', () => {
     settingsModal.classList.add('hidden');
-    updateUserPresence(true); // تحديث حالة الظهور إذا تغيرت
+    updateUserPresence(true);
 });
 
-// تسجيل الخروج
 logoutBtn.addEventListener('click', () => {
     updateUserPresence(false);
     auth.signOut();
     settingsModal.classList.add('hidden');
 });
 
-// الوضع الداكن
 function loadThemePreference() {
     if (localStorage.getItem('theme') === 'dark') {
         document.body.classList.add('dark-theme');
@@ -199,6 +170,7 @@ function loadThemePreference() {
         themeToggleBtn.style.background = 'var(--primary-color)';
     }
 }
+
 themeToggleBtn.addEventListener('click', () => {
     document.body.classList.toggle('dark-theme');
     if (document.body.classList.contains('dark-theme')) {
@@ -212,14 +184,11 @@ themeToggleBtn.addEventListener('click', () => {
     }
 });
 
-// ==========================================
 // 3. البحث وبدء المحادثات
-// ==========================================
-
 userSearchInput.addEventListener('input', (e) => {
     const query = e.target.value.trim().toLowerCase();
     if (query.length < 1) {
-        chatsList.innerHTML = '<div class="empty-list-notice fade-in">ابحث عن مستخدم للبدء</div>';
+        chatsList.innerHTML = '<div class="empty-list-notice">ابحث عن مستخدم للبدء</div>';
         return;
     }
 
@@ -234,22 +203,18 @@ userSearchInput.addEventListener('input', (e) => {
                     renderUserItem(u);
                 }
             });
-            if (count === 0) {
-                chatsList.innerHTML = '<div class="empty-list-notice fade-in">لم يتم العثور على مستخدم</div>';
-            }
+            if (count === 0) chatsList.innerHTML = '<div class="empty-list-notice">لم يتم العثور على مستخدم</div>';
         });
 });
 
 function renderUserItem(user) {
     const item = document.createElement('div');
-    item.style.cssText = "display:flex;align-items:center;padding:15px;cursor:pointer;border-bottom:1px solid var(--border-color); transition: background 0.2s;";
+    item.style.cssText = "display:flex;align-items:center;padding:15px;cursor:pointer;border-bottom:1px solid var(--border-color);transition:background 0.2s;";
     item.onmouseover = () => item.style.background = 'var(--header-bg)';
     item.onmouseout = () => item.style.background = 'transparent';
     item.innerHTML = `
         <div class="avatar" style="margin-left:15px;">${user.username.charAt(0).toUpperCase()}</div>
-        <div>
-            <h4 style="margin:0; font-size:16px; color: var(--text-main);">${user.username}</h4>
-        </div>
+        <div><h4 style="margin:0;font-size:16px;color:var(--text-main);">${user.username}</h4></div>
     `;
     item.onclick = () => openPrivateChat(user);
     chatsList.appendChild(item);
@@ -267,13 +232,11 @@ function openPrivateChat(targetUser) {
     activeChatUsername.innerText = targetUser.username;
     activeChatAvatar.innerText = targetUser.username.charAt(0).toUpperCase();
 
-    // مراقبة حالة المستخدم الآخر
     db.collection('users').doc(targetUser.uid).onSnapshot(doc => {
         if(doc.exists) {
             const data = doc.data();
-            if (data.hideStatus) {
-                activeUserStatus.innerText = "آخر ظهور مخفي";
-            } else if(data.isOnline) {
+            if (data.hideStatus) activeUserStatus.innerText = "آخر ظهور مخفي";
+            else if(data.isOnline) {
                 activeUserStatus.innerText = "متصل الآن";
                 activeUserStatus.style.color = "var(--primary-color)";
             } else {
@@ -288,43 +251,33 @@ function openPrivateChat(targetUser) {
     loadPrivateMessages();
 }
 
-// ==========================================
-// 4. إرسال وتحميل الرسائل
-// ==========================================
-
+// 4. الرسائل والتحميل
 sendBtn.addEventListener('click', sendMessage);
-messageInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') sendMessage();
-});
+messageInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 
 function sendMessage() {
     const text = messageInput.value.trim();
     if (text === '' || !currentChatId) return;
 
     if (editingMessageId) {
-        db.collection('chats').doc(currentChatId).collection('messages').doc(editingMessageId).update({
-            text: text,
-            isEdited: true
-        });
+        db.collection('chats').doc(currentChatId).collection('messages').doc(editingMessageId).update({ text: text, isEdited: true });
         editingMessageId = null;
         messageInput.value = '';
         cancelReplyUI();
         return;
     }
 
-    const msgData = {
+    db.collection('chats').doc(currentChatId).collection('messages').add({
         text: text,
         senderUid: currentUser.uid,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         status: 'sent',
         deletedFor: [],
         replyTo: replyToMessageData || null
-    };
+    });
 
-    db.collection('chats').doc(currentChatId).collection('messages').add(msgData);
     messageInput.value = '';
     cancelReplyUI();
-    chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 function loadPrivateMessages() {
@@ -333,8 +286,7 @@ function loadPrivateMessages() {
     unsubscribeMessages = db.collection('chats').doc(currentChatId).collection('messages')
         .orderBy('timestamp', 'asc')
         .onSnapshot((snapshot) => {
-            // تنظيف الحاوية ولكن نحتفظ برسالة الإشعار العلوية
-            const notice = chatBox.querySelector('div'); 
+            const notice = chatBox.querySelector('div');
             chatBox.innerHTML = '';
             if(notice) chatBox.appendChild(notice);
 
@@ -342,13 +294,9 @@ function loadPrivateMessages() {
                 const data = doc.data();
                 const msgId = doc.id;
 
-                // التعامل مع الطوابع الزمنية والحذف التلقائي
-                if (data.timestamp) {
-                    const msgDate = data.timestamp.toDate();
-                    if (msgDate < twelveHoursAgo) {
-                        db.collection('chats').doc(currentChatId).collection('messages').doc(msgId).delete();
-                        return; // لا تقم بعرض الرسالة
-                    }
+                if (data.timestamp && data.timestamp.toDate() < twelveHoursAgo) {
+                    db.collection('chats').doc(currentChatId).collection('messages').doc(msgId).delete();
+                    return;
                 }
 
                 if (!data.deletedFor || !data.deletedFor.includes(currentUser.uid)) {
@@ -369,28 +317,22 @@ function displayMessage(data, msgId) {
 
     let replyHTML = '';
     if (data.replyTo) {
-        replyHTML = `<div style="background:rgba(0,0,0,0.05); border-right:3px solid var(--primary-color); padding:6px; margin-bottom:8px; border-radius:4px; font-size:12px;">
+        replyHTML = `<div style="background:rgba(0,0,0,0.05);border-right:3px solid var(--primary-color);padding:6px;margin-bottom:8px;border-radius:4px;font-size:12px;">
             <b style="color:var(--primary-color)">${data.replyTo.sender}</b><br>${data.replyTo.text}
         </div>`;
     }
 
     const timeStr = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'الآن';
-    
-    // تصميم علامات الصح
-    let ticks = '';
-    if (isMe) {
-        ticks = '<span style="font-size:11px; margin-right:5px; color: var(--primary-color);">✓✓</span>';
-    }
+    const ticks = isMe ? '<span style="font-size:11px;margin-right:5px;color:var(--primary-color);">✓✓</span>' : '';
 
     bubble.innerHTML = `
         ${replyHTML}
-        <div>${data.text} ${data.isEdited ? '<span style="font-size:10px; opacity:0.6;">(معدلة)</span>' : ''}</div>
-        <div style="font-size:10px; text-align:left; margin-top:5px; opacity:0.7; display:flex; justify-content:flex-end;">
+        <div>${data.text} ${data.isEdited ? '<span style="font-size:10px;opacity:0.6;">(معدلة)</span>' : ''}</div>
+        <div style="font-size:10px;text-align:left;margin-top:5px;opacity:0.7;display:flex;justify-content:flex-end;">
             ${timeStr} ${ticks}
         </div>
     `;
 
-    // السحب للرد
     let startX = 0;
     bubble.addEventListener('touchstart', (e) => startX = e.touches[0].clientX);
     bubble.addEventListener('touchend', (e) => {
@@ -399,7 +341,6 @@ function displayMessage(data, msgId) {
         }
     });
 
-    // قائمة الخيارات عند النقر المطول / اليمين
     bubble.oncontextmenu = (e) => {
         e.preventDefault();
         showContextMenu(e.clientX, e.clientY, data, msgId, isMe);
@@ -409,20 +350,16 @@ function displayMessage(data, msgId) {
     chatBox.appendChild(msgWrapper);
 }
 
-// ==========================================
-// 5. الرد وتعديل وحذف الرسائل
-// ==========================================
-
 function setReplyMessage(text, sender) {
     replyToMessageData = { text, sender };
     let replyPreview = document.getElementById('reply-preview');
     if (!replyPreview) {
         replyPreview = document.createElement('div');
         replyPreview.id = 'reply-preview';
-        replyPreview.style.cssText = "background:var(--header-bg); padding:10px 15px; display:flex; justify-content:space-between; align-items:center; font-size:13px; border-left:4px solid var(--primary-color);";
+        replyPreview.style.cssText = "background:var(--header-bg);padding:10px 15px;display:flex;justify-content:space-between;align-items:center;font-size:13px;border-left:4px solid var(--primary-color);";
         chatInputArea.parentNode.insertBefore(replyPreview, chatInputArea);
     }
-    replyPreview.innerHTML = `<div>الرد على <b>${sender}</b>: ${text}</div><button onclick="cancelReplyUI()" style="border:none; background:none; cursor:pointer; color:var(--text-main); font-size:16px;">✕</button>`;
+    replyPreview.innerHTML = `<div>الرد على <b>${sender}</b>: ${text}</div><button onclick="cancelReplyUI()" style="border:none;background:none;cursor:pointer;color:var(--text-main);font-size:16px;">✕</button>`;
 }
 
 function cancelReplyUI() {
@@ -437,14 +374,14 @@ function showContextMenu(x, y, data, msgId, isMe) {
 
     const menu = document.createElement('div');
     menu.id = 'msg-context-menu';
-    menu.style.cssText = `position:fixed; top:${y}px; left:${x}px; background:var(--bg-card); color:var(--text-main); box-shadow:0 5px 15px rgba(0,0,0,0.2); border-radius:10px; z-index:1000; padding:10px 0; min-width:150px; overflow:hidden; border:1px solid var(--border-color);`;
+    menu.style.cssText = `position:fixed;top:${y}px;left:${x}px;background:var(--bg-card);color:var(--text-main);box-shadow:0 5px 15px rgba(0,0,0,0.2);border-radius:10px;z-index:1000;padding:10px 0;min-width:150px;border:1px solid var(--border-color);`;
 
-    let options = `<div style="padding:10px 20px; cursor:pointer; transition:0.2s;" onmouseover="this.style.background='var(--header-bg)'" onmouseout="this.style.background='transparent'" onclick="setReplyMessage('${data.text}', '${isMe ? 'أنت' : activeChatUser.username}'); removeMenu();">↪️ رد</div>`;
-    options += `<div style="padding:10px 20px; cursor:pointer; transition:0.2s;" onmouseover="this.style.background='var(--header-bg)'" onmouseout="this.style.background='transparent'" onclick="deleteForMe('${msgId}'); removeMenu();">🗑️ حذف لدي</div>`;
+    let options = `<div style="padding:10px 20px;cursor:pointer;" onclick="setReplyMessage('${data.text}', '${isMe ? 'أنت' : activeChatUser.username}');removeMenu();">↪️ رد</div>`;
+    options += `<div style="padding:10px 20px;cursor:pointer;" onclick="deleteForMe('${msgId}');removeMenu();">🗑️ حذف لدي</div>`;
 
     if (isMe) {
-        options += `<div style="padding:10px 20px; cursor:pointer; transition:0.2s;" onmouseover="this.style.background='var(--header-bg)'" onmouseout="this.style.background='transparent'" onclick="editMsg('${msgId}', '${data.text}'); removeMenu();">✏️ تعديل</div>`;
-        options += `<div style="padding:10px 20px; cursor:pointer; color:#dc3545; transition:0.2s;" onmouseover="this.style.background='var(--header-bg)'" onmouseout="this.style.background='transparent'" onclick="deleteForEveryone('${msgId}'); removeMenu();">🚫 حذف لدى الجميع</div>`;
+        options += `<div style="padding:10px 20px;cursor:pointer;" onclick="editMsg('${msgId}', '${data.text}');removeMenu();">✏️ تعديل</div>`;
+        options += `<div style="padding:10px 20px;cursor:pointer;color:#dc3545;" onclick="deleteForEveryone('${msgId}');removeMenu();">🚫 حذف لدى الجميع</div>`;
     }
 
     menu.innerHTML = options;
@@ -462,9 +399,11 @@ function deleteForMe(msgId) {
         deletedFor: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
     });
 }
+
 function deleteForEveryone(msgId) {
     db.collection('chats').doc(currentChatId).collection('messages').doc(msgId).delete();
 }
+
 function editMsg(msgId, oldText) {
     editingMessageId = msgId;
     messageInput.value = oldText;

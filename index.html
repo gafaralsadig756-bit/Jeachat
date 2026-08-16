@@ -6,14 +6,14 @@
     <title>ELD JEACHAT</title>
     <link rel="stylesheet" href="style.css">
     
-    <!-- مكتبات Firebase Compat الضرورية -->
+    <!-- مكتبات Firebase Compat -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
-    <!-- شاشة تسجيل الدخول الجديدة -->
+    <!-- شاشة تسجيل الدخول -->
     <div id="login-screen" class="screen fade-in">
         <div class="login-card">
             <h2>إبدأ الدردشة الآن</h2>
@@ -23,26 +23,22 @@
                 <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo" style="width: 20px; height: 20px;">
                 متابعة باستخدام Google
             </button>
-            
-            <button id="lang-toggle-btn" class="btn" style="background-color: var(--header-bg); color: var(--text-main); width: 100%; border: 1px solid var(--border-color); margin-top: 15px;">
-                🌐 English
-            </button>
         </div>
     </div>
 
-    <!-- نافذة ادخال اسم المستخدم مع الأنيميشن -->
+    <!-- نافذة إدخال اسم المستخدم -->
     <div id="username-modal" class="modal hidden">
         <div class="modal-content fade-in">
             <h3>الرجاء إدخال اسم المستخدم</h3>
             <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;">يجب ألا يتكرر مع اسم مستخدم آخر.</p>
-            <input type="text" id="username-input" placeholder="اسم المستخدم (مثال: ahmed_123)...">
+            <input type="text" id="username-input" placeholder="اسم المستخدم (بالإنجليزي)...">
             <button id="save-username-btn" class="btn" style="width: 100%;">حفظ ومتابعة</button>
             <p id="loading-msg" class="hidden" style="margin-top: 15px; color: var(--primary-color); font-weight: bold;">جاري التحميل... ⏳</p>
             <p id="success-msg" class="hidden" style="margin-top: 15px; color: #25d366; font-weight: bold;">تهانينا تم إنشاء حساب بنجاح 🎉</p>
         </div>
     </div>
 
-    <!-- نافذة الإعدادات (جديدة) -->
+    <!-- نافذة الإعدادات -->
     <div id="settings-modal" class="modal hidden">
         <div class="modal-content fade-in" style="text-align: right;">
             <h3 style="text-align: center; margin-bottom: 20px;">الإعدادات ⚙️</h3>
@@ -108,11 +104,9 @@
 
             <!-- صندوق الرسائل -->
             <div id="chat-box" class="chat-box hidden">
-                <!-- إشعار الحذف التلقائي -->
                 <div style="text-align: center; margin-bottom: 20px; font-size: 11px; color: var(--text-muted); background: var(--header-bg); padding: 8px 15px; border-radius: 20px; width: fit-content; margin-left: auto; margin-right: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                     🔒 الرسائل مشفرة ويتم حذفها تلقائياً كل 12 ساعة للتنظيف
                 </div>
-                <!-- ستظهر الرسائل هنا -->
             </div>
 
             <!-- منطقة إدخال الرسالة -->

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELD JEA CHAT</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+
+    <!-- شاشة تسجيل الدخول -->
+    <div id="login-screen" class="screen">
+        <div class="login-card">
+            <h2>مرحباً بك في المحادثة</h2>
+            <p>سجل دخولك للبدء في المراسلة</p>
+            <button id="google-login-btn">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                تسجيل الدخول بحساب Google
+            </button>
+        </div>
+    </div>
+
+    <!-- نافذة تحديد اسم المستخدم -->
+    <div id="username-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>اختر اسم مستخدم</h3>
+            <p class="hint-text">سيتمكن الآخرون من البحث عنك بهذا الاسم</p>
+            <input type="text" id="username-input" placeholder="@username">
+            <button id="save-username-btn">حفظ ومتابعة</button>
+        </div>
+    </div>
+
+    <!-- الشاشة الرئيسية للمحادثة -->
+    <div id="app-screen" class="screen hidden">
+        
+        <!-- القائمة الجانبية (البحث والمحادثات) -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="avatar" id="my-avatar">U</div>
+                    <span id="my-username">مستخدم</span>
+                </div>
+                <div class="sidebar-actions">
+                    <button id="lang-btn" class="icon-btn"><span class="material-icons">translate</span></button>
+                    <button id="logout-btn" class="icon-btn"><span class="material-icons">logout</span></button>
+                </div>
+            </div>
+
+            <!-- صندوق البحث عن المستخدمين -->
+            <div class="search-box">
+                <span class="material-icons">search</span>
+                <input type="text" id="user-search-input" placeholder="بحث باسم المستخدم...">
+            </div>
+
+            <!-- قائمة نتائج البحث والمحادثات -->
+            <div class="chats-list" id="chats-list">
+                <div class="empty-list-notice">ابحث عن اسم مستخدم لبدء محادثة خاصة</div>
+            </div>
+        </aside>
+
+        <!-- الشاشة الرئيسية للمحادثة النشطة -->
+        <main class="chat-main">
+            <!-- الهيدر العلوي للمحادثة النشطة -->
+            <header class="chat-header hidden" id="chat-header">
+                <div class="user-info">
+                    <div class="avatar" id="active-chat-avatar">?</div>
+                    <div>
+                        <h3 id="active-chat-username">اختر محادثة</h3>
+                        <span class="status">متصل</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- شاشة خالية عند عدم اختيار محادثة -->
+            <div id="no-chat-selected" class="no-chat-view">
+                <span class="material-icons big-icon">chat_bubble_outline</span>
+                <p>اختر مستخدماً من القائمة للبدء في المراسلة</p>
+            </div>
+
+            <!-- منطقة الرسائل -->
+            <div id="chat-box" class="chat-box hidden"></div>
+
+            <!-- شريط إدخال الرسالة -->
+            <footer class="chat-input-area hidden" id="chat-input-area">
+                <input type="text" id="message-input" placeholder="اكتب رسالة...">
+                <button id="send-btn" class="send-btn">
+                    <span class="material-icons">send</span>
+                </button>
+            </footer>
+        </main>
+    </div>
+
+    <!-- مكتبات Firebase Compat -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    
+    <script src="app.js"></script>
+</body>
+</html>

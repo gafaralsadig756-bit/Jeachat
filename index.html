@@ -13,21 +13,52 @@
 </head>
 <body>
 
-    <!-- شاشة تسجيل الدخول -->
-    <div id="login-screen" class="screen">
+    <!-- شاشة تسجيل الدخول الجديدة -->
+    <div id="login-screen" class="screen fade-in">
         <div class="login-card">
-            <h2>مرحباً بك في ELD JEACHAT</h2>
-            <p>سجل دخولك لبدء المحادثات الخاصة</p>
-            <button id="google-login-btn" class="btn">تسجيل الدخول باستخدام Google</button>
+            <h2>إبدأ الدردشة الآن</h2>
+            <p style="margin-bottom: 25px;">مرحباً بك في عالم المحادثات الخاصة والمشفرة</p>
+            
+            <button id="google-login-btn" class="btn" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo" style="width: 20px; height: 20px;">
+                متابعة باستخدام Google
+            </button>
+            
+            <button id="lang-toggle-btn" class="btn" style="background-color: var(--header-bg); color: var(--text-main); width: 100%; border: 1px solid var(--border-color); margin-top: 15px;">
+                🌐 English
+            </button>
         </div>
     </div>
 
-    <!-- نافذة ادخال اسم المستخدم عند لأول مرة -->
+    <!-- نافذة ادخال اسم المستخدم مع الأنيميشن -->
     <div id="username-modal" class="modal hidden">
-        <div class="modal-content">
-            <h3>اختر اسم مستخدم خاص بك</h3>
-            <input type="text" id="username-input" placeholder="اسم المستخدم (بالإنجليزي)...">
-            <button id="save-username-btn" class="btn">حفظ ومتابعة</button>
+        <div class="modal-content fade-in">
+            <h3>الرجاء إدخال اسم المستخدم</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;">يجب ألا يتكرر مع اسم مستخدم آخر.</p>
+            <input type="text" id="username-input" placeholder="اسم المستخدم (مثال: ahmed_123)...">
+            <button id="save-username-btn" class="btn" style="width: 100%;">حفظ ومتابعة</button>
+            <p id="loading-msg" class="hidden" style="margin-top: 15px; color: var(--primary-color); font-weight: bold;">جاري التحميل... ⏳</p>
+            <p id="success-msg" class="hidden" style="margin-top: 15px; color: #25d366; font-weight: bold;">تهانينا تم إنشاء حساب بنجاح 🎉</p>
+        </div>
+    </div>
+
+    <!-- نافذة الإعدادات (جديدة) -->
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-content fade-in" style="text-align: right;">
+            <h3 style="text-align: center; margin-bottom: 20px;">الإعدادات ⚙️</h3>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">
+                <span>المظهر الداكن (Dark Mode)</span>
+                <button id="theme-toggle-btn" class="btn" style="margin: 0; padding: 6px 15px; background: var(--text-muted);">تفعيل</button>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">
+                <span>إخفاء "متصل الآن"</span>
+                <input type="checkbox" id="hide-status-checkbox" style="width: 20px; height: 20px;">
+            </div>
+            
+            <button id="logout-btn" class="btn" style="background-color: #dc3545; width: 100%;">🚪 تسجيل الخروج</button>
+            <button id="close-settings-btn" class="btn" style="background-color: var(--text-muted); width: 100%; margin-top: 10px;">إغلاق</button>
         </div>
     </div>
 
@@ -41,18 +72,19 @@
                     <span id="my-username">المستخدم</span>
                 </div>
                 <div class="header-actions">
-                    <button id="logout-btn" title="تسجيل الخروج">🚪</button>
+                    <button id="add-chat-btn" title="محادثة جديدة">➕</button>
+                    <button id="settings-btn" title="الإعدادات">⚙️</button>
                 </div>
             </div>
 
             <!-- مربع البحث عن اسم المستخدم -->
-            <div class="search-box">
-                <input type="text" id="user-search-input" placeholder="بحث باسم المستخدم...">
+            <div class="search-box hidden" id="search-container">
+                <input type="text" id="user-search-input" placeholder="ابحث عن اسم مستخدم لبدء محادثة...">
             </div>
 
             <!-- قائمة المستخدمين والدردشات -->
             <div id="chats-list" class="chats-list">
-                <div class="empty-list-notice">ابحث عن اسم مستخدم لبدء محادثة خاصة</div>
+                <div class="empty-list-notice fade-in">لا يوجد محادثات حتى الآن.<br>اضغط على ➕ للبدء!</div>
             </div>
         </div>
 
@@ -63,23 +95,30 @@
                 <div id="active-chat-avatar" class="avatar">U</div>
                 <div class="chat-header-info">
                     <h3 id="active-chat-username">اسم المستخدم</h3>
-                    <span id="active-user-status" style="font-size: 12px; color: #888;">جاري التحميل...</span>
+                    <span id="active-user-status" style="font-size: 12px; color: var(--text-muted);">متصل الآن</span>
                 </div>
             </div>
 
             <!-- الرسالة الترحيبية عند عدم اختيار محادثة -->
-            <div id="no-chat-selected" class="no-chat">
-                <h3>مرحباً بك في المحادثات الخاصة</h3>
-                <p>اختر مستخدماً من القائمة للبدء في المراسلة</p>
+            <div id="no-chat-selected" class="no-chat fade-in">
+                <div style="font-size: 50px; margin-bottom: 15px;">💬</div>
+                <h3>مرحباً بك في ELD JEACHAT</h3>
+                <p>اختر محادثة من القائمة أو ابدأ دردشة جديدة</p>
             </div>
 
             <!-- صندوق الرسائل -->
-            <div id="chat-box" class="chat-box hidden"></div>
+            <div id="chat-box" class="chat-box hidden">
+                <!-- إشعار الحذف التلقائي -->
+                <div style="text-align: center; margin-bottom: 20px; font-size: 11px; color: var(--text-muted); background: var(--header-bg); padding: 8px 15px; border-radius: 20px; width: fit-content; margin-left: auto; margin-right: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    🔒 الرسائل مشفرة ويتم حذفها تلقائياً كل 12 ساعة للتنظيف
+                </div>
+                <!-- ستظهر الرسائل هنا -->
+            </div>
 
             <!-- منطقة إدخال الرسالة -->
             <div id="chat-input-area" class="chat-input-area hidden">
-                <input type="text" id="message-input" placeholder="اكتب رسالة...">
-                <button id="send-btn" class="btn-send">إرسال</button>
+                <input type="text" id="message-input" placeholder="اكتب رسالتك هنا...">
+                <button id="send-btn" class="btn-send">➤</button>
             </div>
         </div>
     </div>

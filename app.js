@@ -2,13 +2,14 @@
 
 // 1. ضع إعدادات مشروعك من Firebase Console هنا
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyAoUNChdv9mM3ijVjEkDZCzarVKIVcSGtM",
+  authDomain: "eld-jeachat.firebaseapp.com",
+  projectId: "eld-jeachat",
+  storageBucket: "eld-jeachat.firebasestorage.app",
+  messagingSenderId: "566166664040",
+  appId: "1:566166664040:web:c0aa091b1a02f79e721cdd"
 };
+
 
 // تهيئة Firebase
 if (!firebase.apps.length) {
